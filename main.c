@@ -14,7 +14,6 @@ void add(FILE * fp);
 void modify(FILE * fp);
 void display(FILE * fp);
 void Indivisual(FILE *fp);
-void count();
 FILE * del(FILE * fp);
 void printChar(char ch,int n);
 void title();
