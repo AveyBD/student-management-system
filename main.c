@@ -112,7 +112,7 @@ void printChar(char ch,int n)
 void title()
 {
     system("cls");
-
+    system("COLOR 03");
     printf("\n\n\t");
     printChar('=',19);
     printf(" Student Management System ");
