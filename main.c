@@ -8,15 +8,19 @@
 #include<math.h>
 #include <windows.h>
 
+//Structure Declaration.
+
 #define Student struct Stud
 
 void add(FILE * fp);
 void modify(FILE * fp);
 void display(FILE * fp);
-void Indivisual(FILE *fp);
+void Individual(FILE *fp);
 FILE * del(FILE * fp);
 void printChar(char ch,int n);
 void title();
+
+//Structure Definition
 
 struct Stud
 {
@@ -318,7 +322,7 @@ void display(FILE * fp)
     system("pause");
 }
 
-void Indivisual(FILE *fp)
+void Individual(FILE *fp)
 {
     title();
 
