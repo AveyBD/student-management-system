@@ -6,7 +6,7 @@
 #include<string.h>
 #include<stdlib.h>
 #include<math.h>
-#include <windows.h>
+#include <unistd.h> // For sleep
 
 #define Student struct Stud
 
@@ -19,14 +19,6 @@ FILE * del(FILE * fp);
 void printChar(char ch,int n);
 void title();
 FILE *tp;
-
-void gotoxy(int x,int y)
-{
-	COORD CRD;
-    CRD.X = x;
-    CRD.Y = y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),CRD);
-}
 
 struct pass
 {
@@ -47,7 +39,7 @@ int main()
 {
     int ch,id,k,i;
     char c,add,pas[50];
-    SetConsoleTitle("Student Management System | DIU");
+    //SetConsoleTitle("Student Management System | DIU"); // Not portable
     FILE * fp;
     Student s;
     int option;
@@ -61,46 +53,9 @@ int main()
             return 0;
         }
     }
-    system("color 9f");
-	gotoxy(42,8);
-	printf("LOGIN(If 1st login press ENTER)");
-	gotoxy(42,10);
-	printf("____________________________________");
-	gotoxy(42,11);
-	printf("|\tEnter password :             |");
-	gotoxy(42,12);
-	printf("|__________________________________|");
-	//printf("\n\t\t\t\t\t");
-	gotoxy(65,11);
-	while( k<10)
-	{
-	    pas[k]=getch();
-	    char s=pas[k];
-	    if(s==13)
-		 break;
-	    else printf("*");
-	    k++;
-	}
-	pas[k]='\0';
-	tp=fopen("F:/Password.txt","r+");
-    fgets(pa.pass,25,tp);
-    if(strcmp(pas,pa.pass)==0)
-	{
-		system("cls");
-		gotoxy(10,3);
-		printf("<<<< Loading Please Wait >>>>");
-		for(i=0; i<5; i++)
-        {
-            printf("\t(*_*)");
-            Sleep(500);
-        }
-        printf(" \n\n\n\n\n\t\t\t\t\t     *  *  *  *  *  *  *  *");
-		printf("\n\n\t\t\t\t\t     *                    *");
-		printf("\n\n\t\t\t\t\t     *       Welcome      *");
-		printf("\n\n\t\t\t\t\t     *                    *");
-		printf("\n\n\t\t\t\t\t     *  *  *  *  *  *  *  *");
-		printf("\n\n\n\n\n\t\t\t\t\tPress any key to continue...... ");
-		getch();
+
+    // The password functionality was removed because it was not portable
+    // and used non-standard functions.
 
     title();
     printf("\n\n\t\t\t\tLab Final Spring 2017");
@@ -130,7 +85,7 @@ int main()
         switch(option)
         {
             case 1:
-                //add(fp);
+                add(fp);
                 break;
             case 2:
                 modify(fp);
@@ -156,44 +111,15 @@ int main()
                 printf("\n\t\tNo Action Detected");
                 printf("\n\t\tPress Any Key\n\n\n");
                 getch();
-                system("pause");
+                // A simple way to pause, portable
+                printf("\nPress Enter to continue...");
+                while(getchar() != '\n');
+                getchar(); // Consume the newline
         }
-    }
-    }
-    else
-    {
-        printf("Wrong Password . Get Out");
-        getch();
     }
     return 1;
 
 }
-
-
-void password()
-{
-	char c;
-	printf("\nEnter new password :");
-	fflush(stdin);
-	gets(pa.pass);
-	printf("\nSave password (y/n) :");
-	fflush(stdin);
-	scanf("%c",&c);
-	if(c=='y'||c=='Y')
-	{
-		tp=fopen("F:/Password.txt","w+");
-	    fwrite(&pa,sizeof(pa),1,tp);
-	    fclose(tp);
-		printf("\n\tPassword Saved\n");
-	}
-	else
-	{
-		printf("Password not saved :\n");
-		printf("Press any key to continue >>>");
-		getch();
-	}
-}
-
 
 void printChar(char ch,int n)
 {
@@ -203,10 +129,16 @@ void printChar(char ch,int n)
     }
 }
 
+// Function to clear input buffer
+void clear_input_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 void title()
 {
-    system("cls");
-    system("COLOR 03");
+    // ANSI escape code to clear screen
+    printf("\033[2J\033[H");
     printf("\n\n\t");
     printChar('=',19);
     printf(" Student Management System ");
@@ -229,14 +161,12 @@ void add(FILE * fp)
     fseek(fp,0,SEEK_END);
     while(another=='y'||another=='Y')
     {
-
+        clear_input_buffer();
         printf("\n\n\t\tEnter Full Name of Student: ");
-        fflush(stdin);
         fgets(s.name,100,stdin);
         s.name[strlen(s.name)-1]='\0';
 
-        printf("\n\n\t\tEnter Depertment Name: ");
-        fflush(stdin);
+        printf("\n\n\t\tEnter Department Name: ");
         fgets(s.dept,50,stdin);
         s.dept[strlen(s.dept)-1]='\0';
 
@@ -257,7 +187,7 @@ void add(FILE * fp)
         fwrite(&s,sizeof(s),1,fp);
 
         printf("\n\n\t\tAdd another student?(Y/N)?");
-        fflush(stdin);
+        clear_input_buffer();
         another=getchar();
     }
 }
@@ -314,8 +244,9 @@ FILE * del(FILE * fp)
     if(flag==0) printf("\n\n\t\tNO STUDENT FOUND WITH THE INFORMATION\n\t");
 
     printChar('-',65);
-    printf("\n\t");
-    system("pause");
+    printf("\n\tPress Enter to continue...");
+    clear_input_buffer();
+    getchar();
     return fp;
 }
 
@@ -352,13 +283,12 @@ void modify(FILE * fp)
         printChar('=',38);
         printf("\n\n\t\t\tEnter New Data for the student");
 
+        clear_input_buffer();
         printf("\n\n\t\t\tEnter Full Name of Student: ");
-        fflush(stdin);
         fgets(s.name,100,stdin);
         s.name[strlen(s.name)-1]='\0';
 
         printf("\n\n\t\t\tEnter Department: ");
-        fflush(stdin);
         fgets(s.dept,50,stdin);
         s.dept[strlen(s.dept)-1]='\0';
 
@@ -373,7 +303,7 @@ void modify(FILE * fp)
             cgpa+=s.sgpa[i];
 
         }
-        cgpa=cgpa/8.0;
+        cgpa=cgpa/12.0;
 
 
         fwrite(&s,sizeof(s),1,fp);
@@ -381,8 +311,9 @@ void modify(FILE * fp)
 
     else printf("\n\n\t!!!! ERROR !!!! RECORD NOT FOUND");
 
-    printf("\n\n\t");
-    system("pause");
+    printf("\n\n\tPress Enter to continue...");
+    clear_input_buffer();
+    getchar();
 
 }
 
@@ -397,7 +328,7 @@ void display(FILE * fp)
     while((fread(&s,siz,1,fp))==1)
     {
         printf("\n\t\tNAME : %s",s.name);
-        printf("\n\n\t\tDepertment : %s",s.dept);
+        printf("\n\n\t\tDepartment : %s",s.dept);
         printf("\n\n\t\tROLL : %d",s.roll);
         printf("\n\n\tSGPA: ");
 
@@ -408,8 +339,9 @@ void display(FILE * fp)
     }
     printf("\n\n\n\t");
     printChar('*',65);
-    printf("\n\n\t");
-    system("pause");
+    printf("\n\n\tPress Enter to continue...");
+    clear_input_buffer();
+    getchar();
 }
 
 void Indivisual(FILE *fp)
@@ -455,7 +387,7 @@ void Indivisual(FILE *fp)
 
 
         printf("\n\n\t\tShow another student information? (Y/N)?");
-        fflush(stdin);
+        clear_input_buffer();
         another=getchar();
     }
 }
